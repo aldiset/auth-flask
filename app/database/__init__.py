@@ -4,7 +4,9 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 from contextlib import contextmanager
 
-engine = create_engine(url='sqlite:///database.db', connect_args={"check_same_thread": False})
+from app.config import DATABASE_URL
+
+engine = create_engine(url=DATABASE_URL, connect_args={"check_same_thread": False})
 Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
