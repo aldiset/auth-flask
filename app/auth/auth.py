@@ -5,7 +5,6 @@ from flask import make_response
 from datetime import datetime, timedelta
 from werkzeug.security import check_password_hash
 
-from app.database.models.users import User
 from app.config import SECRET_KEY
 from app.base.crud import CRUDUser
 from app.database import session_manager

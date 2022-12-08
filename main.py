@@ -1,9 +1,8 @@
 import json
 from flask import Flask, request, jsonify
-from flask import make_response
 
 from app.auth.auth import token_required, login
-from app.base.crud import CRUDUser
+from app.base.crud import CRUDUser, CRUDUserGroup, CRUDGroupPermission
 from app.database import session_manager
 from flask import Response
 
@@ -22,6 +21,19 @@ def get_all_users(user):
 @token_required
 def get_me(user):
 	return jsonify({"data":user.name})
+
+@app.route('/me/permission', methods=['POST'])
+@token_required
+def user_permission(user):
+	with session_manager() as db:
+		data = []
+		user_group_permission = CRUDUserGroup.get_user_permission(db=db, user_id=user.id)
+		for ugp in user_group_permission:
+			data.append({
+				"permission_name": ugp[1].permission.name,
+				"permission_code": ugp[1].permission.code
+			})
+	return jsonify({"data":data})
 
 @app.route('/login', methods =['POST'])
 def sigin():

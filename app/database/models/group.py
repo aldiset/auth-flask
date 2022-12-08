@@ -2,8 +2,8 @@ from sqlalchemy import Column, String, Integer, Boolean
 from app.database import Base
 
 # Database ORMs
-class Permission(Base):
-    __tablename__ = 'permission'
+class Group(Base):
+    __tablename__ = 'group'
     id = Column(Integer, primary_key = True)
     name = Column(String)
     code = Column(String, unique=True)

@@ -2,7 +2,7 @@ import uuid
 from sqlalchemy.orm import Session
 from werkzeug.security import generate_password_hash
 
-from app.database.models.users import User
+from app.database.models import User, UserGroup, Permission, GroupPermission
 
 class CRUDUser:
     def create(db: Session, data: dict):
@@ -28,3 +28,38 @@ class CRUDUser:
     
     def get_user_by_public_id(db : Session, public_id: str):
         return db.query(User).filter(User.public_id == public_id).first()
+    
+class CRUDUserGroup:
+    def create(db: Session, data: dict):
+        user_group = db.query(UserGroup).filter(UserGroup.user_id == data.get("user_id"), UserGroup.group_id == data.get("group_id")).first()
+        if user_group:
+            return False
+        db.add(**data)
+        db.commit()
+        return data
+    
+    def get_user_group_by_id(db: Session, id: int):
+        return db.query(UserGroup).filter(UserGroup.id == id).first()
+    
+    def get_user_groups(db:Session):
+        return db.query(UserGroup).all()
+    
+    def get_user_group_by_user_id(db: Session, user_id):
+        return db.query(UserGroup).filter(UserGroup.user_id == user_id).all()
+    
+    def get_user_group_by_group_id(db: Session, group_id):
+        return db.query(UserGroup).filter(UserGroup.group_id == group_id).all()
+    
+    def get_user_group_by_user_id_group_id(db: Session, user_id: int, group_id: int):
+        return  db.query(UserGroup).filter(UserGroup.user_id == user_id, UserGroup.group_id == group_id).all()
+    
+    def get_user_permission(db: Session, user_id: int):
+        group_permission = db.query(UserGroup, GroupPermission).join(GroupPermission, GroupPermission.group_id == UserGroup.group_id).filter(
+            UserGroup.user_id == user_id
+        ).order_by(GroupPermission.id).all()
+        return group_permission
+
+
+class CRUDGroupPermission:
+    def get_group_permission_by_group_id(db: Session, group_id: int):
+        return db.query(GroupPermission).filter(GroupPermission.group_id==group_id).all()
